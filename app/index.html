@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Portal de Pruebas - Iniciar sesión</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="top"><strong>Portal de Pruebas</strong></header>
+  <main>
+    <h1>Iniciar sesión</h1>
+    <form id="login-form" novalidate>
+      <label for="username">Usuario</label>
+      <input type="text" id="username" name="username" data-testid="username" autocomplete="username">
+      <span class="field-error" data-testid="error-username" role="alert"></span>
+
+      <label for="password">Contraseña</label>
+      <input type="password" id="password" name="password" data-testid="password" autocomplete="current-password">
+      <span class="field-error" data-testid="error-password" role="alert"></span>
+
+      <p><button type="submit" id="btn-login">Ingresar</button></p>
+      <div class="alert-error" role="alert" data-testid="login-error" hidden></div>
+    </form>
+    <p class="hint">Usuarios demo: admin / Admin123! · qa / Qa12345! · bloqueado / Bloq123!</p>
+  </main>
+
+  <script>
+    const form = document.getElementById('login-form');
+    const alertBox = form.querySelector('.alert-error');
+    const errUser = form.querySelector('[data-testid=error-username]');
+    const errPass = form.querySelector('[data-testid=error-password]');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = form.username.value.trim();
+      const password = form.password.value;
+      errUser.textContent = username ? '' : 'El usuario es obligatorio';
+      errPass.textContent = password ? '' : 'La contraseña es obligatoria';
+      alertBox.hidden = true;
+      if (!username || !password) return;
+
+      const resp = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+      const data = await resp.json();
+      if (!resp.ok) {
+        alertBox.textContent = data.error;
+        alertBox.hidden = false;
+        return;
+      }
+      sessionStorage.setItem('session', JSON.stringify({ username: data.username, token: data.token }));
+      location.href = '/dashboard.html';
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+node_modules/
+playwright-report/
+test-results/
+pw_junit_report.xml
+*.log

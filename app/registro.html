@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Portal de Pruebas - Registro</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="top">
+    <strong>Portal de Pruebas</strong>
+    <nav><a href="/dashboard.html">Volver al panel</a></nav>
+  </header>
+
+  <main>
+    <h1>Registro de cliente</h1>
+    <form id="registro-form" novalidate>
+      <label for="nombre">Nombre completo</label>
+      <input type="text" id="nombre" data-testid="nombre">
+      <span class="field-error" data-testid="error-nombre" role="alert"></span>
+
+      <label for="email">Correo electrónico</label>
+      <input type="email" id="email" data-testid="email">
+      <span class="field-error" data-testid="error-email" role="alert"></span>
+
+      <label for="edad">Edad</label>
+      <input type="number" id="edad" data-testid="edad">
+      <span class="field-error" data-testid="error-edad" role="alert"></span>
+
+      <label for="pais">País</label>
+      <select id="pais" data-testid="pais">
+        <option value="">Seleccione...</option>
+        <option value="CO">Colombia</option>
+        <option value="MX">México</option>
+        <option value="AR">Argentina</option>
+        <option value="ES">España</option>
+      </select>
+      <span class="field-error" data-testid="error-pais" role="alert"></span>
+
+      <label><input type="checkbox" id="terminos" data-testid="terminos"> Acepto los términos y condiciones</label>
+      <span class="field-error" data-testid="error-terminos" role="alert"></span>
+
+      <p><button type="submit" id="btn-registrar">Registrarme</button></p>
+      <div class="alert-ok" role="status" data-testid="registro-ok" hidden></div>
+    </form>
+  </main>
+
+  <script>
+    const form = document.getElementById('registro-form');
+    const ok = form.querySelector('[data-testid=registro-ok]');
+    const setError = (campo, msg) =>
+      (form.querySelector(`[data-testid=error-${campo}]`).textContent = msg);
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      ok.hidden = true;
+      const nombre = form.nombre.value.trim();
+      const email = form.email.value.trim();
+      const edad = form.edad.value === '' ? null : Number(form.edad.value);
+
+      const errores = {
+        nombre: nombre.length >= 3 ? '' : 'El nombre debe tener al menos 3 caracteres',
+        email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? '' : 'Correo electrónico inválido',
+        edad: edad === null ? 'La edad es obligatoria'
+          : edad < 18 ? 'Debes ser mayor de edad'
+          : edad > 99 ? 'Edad fuera de rango' : '',
+        pais: form.pais.value ? '' : 'Selecciona un país',
+        terminos: form.terminos.checked ? '' : 'Debes aceptar los términos',
+      };
+      for (const [campo, msg] of Object.entries(errores)) setError(campo, msg);
+      if (Object.values(errores).some(Boolean)) return;
+
+      ok.textContent = `Registro exitoso para ${nombre}`;
+      ok.hidden = false;
+      form.reset();
+    });
+  </script>
+</body>
+</html>

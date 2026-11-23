@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Portal de Pruebas - Panel</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="top">
+    <strong>Portal de Pruebas</strong>
+    <nav>
+      <a href="/registro.html" data-testid="nav-registro">Registro</a>
+      <button type="button" id="btn-logout">Cerrar sesión</button>
+    </nav>
+  </header>
+
+  <main class="dashboard">
+    <h1 data-testid="welcome">Bienvenido, <span id="user-name"></span></h1>
+
+    <h2>Mis tareas</h2>
+    <form id="todo-form" class="fila" novalidate>
+      <input type="text" id="todo-input" data-testid="todo-input" placeholder="Nueva tarea" aria-label="Nueva tarea">
+      <button type="submit" id="btn-add">Agregar</button>
+    </form>
+    <span class="field-error" id="todo-error" data-testid="todo-error" role="alert"></span>
+
+    <div class="filtros" role="group" aria-label="Filtros">
+      <button type="button" class="secundario activo" data-filter="todas">Todas</button>
+      <button type="button" class="secundario" data-filter="activas">Activas</button>
+      <button type="button" class="secundario" data-filter="completadas">Completadas</button>
+    </div>
+
+    <ul id="todo-list" data-testid="todo-list"></ul>
+    <p id="todo-count" data-testid="todo-count"></p>
+  </main>
+
+  <script>
+    const session = JSON.parse(sessionStorage.getItem('session') || 'null');
+    if (!session) location.replace('./index.html');
+
+    const MAX_LEN = 60;
+    const storageKey = `todos:${session ? session.username : ''}`;
+    let todos = JSON.parse(localStorage.getItem(storageKey) || '[]');
+    let filter = 'todas';
+
+    document.getElementById('user-name').textContent = session ? session.username : '';
+
+    const list = document.getElementById('todo-list');
+    const count = document.getElementById('todo-count');
+    const input = document.getElementById('todo-input');
+    const error = document.getElementById('todo-error');
+
+    function save() { localStorage.setItem(storageKey, JSON.stringify(todos)); }
+
+    function render() {
+      list.innerHTML = '';
+      const visibles = todos.filter((t) =>
+        filter === 'todas' ? true : filter === 'activas' ? !t.done : t.done);
+      for (const t of visibles) {
+        const li = document.createElement('li');
+        if (t.done) li.classList.add('completada');
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.checked = t.done;
+        cb.id = `chk-${t.id}`;
+        cb.setAttribute('aria-label', `Completar ${t.title}`);
+        cb.addEventListener('change', () => { t.done = cb.checked; save(); render(); });
+        const lb = document.createElement('label');
+        lb.htmlFor = cb.id;
+        lb.textContent = t.title;
+        const del = document.createElement('button');
+        del.type = 'button';
+        del.textContent = 'Eliminar';
+        del.setAttribute('aria-label', `Eliminar ${t.title}`);
+        del.addEventListener('click', () => { todos = todos.filter((x) => x.id !== t.id); save(); render(); });
+        li.append(cb, lb, del);
+        list.appendChild(li);
+      }
+      const pendientes = todos.filter((t) => !t.done).length;
+      count.textContent = `${pendientes} ${pendientes === 1 ? 'pendiente' : 'pendientes'}`;
+      document.querySelectorAll('[data-filter]').forEach((b) =>
+        b.classList.toggle('activo', b.dataset.filter === filter));
+    }
+
+    document.getElementById('todo-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const title = input.value.trim();
+      error.textContent = '';
+      if (!title) { error.textContent = 'Escribe el nombre de la tarea'; return; }
+      if (title.length > MAX_LEN) { error.textContent = `Máximo ${MAX_LEN} caracteres`; return; }
+      if (todos.some((t) => t.title.toLowerCase() === title.toLowerCase())) {
+        error.textContent = 'La tarea ya existe'; return;
+      }
+      todos.push({ id: Date.now() + Math.random().toString(16).slice(2), title, done: false });
+      save();
+      input.value = '';
+      render();
+    });
+
+    document.querySelectorAll('[data-filter]').forEach((b) =>
+      b.addEventListener('click', () => { filter = b.dataset.filter; render(); }));
+
+    document.getElementById('btn-logout').addEventListener('click', () => {
+      sessionStorage.removeItem('session');
+      location.href = '/index.html';
+    });
+
+    render();
+  </script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+:root { --azul: #1f5fbf; --rojo: #c0392b; --verde: #1e8449; --gris: #f3f5f8; --borde: #cfd6df; }
+* { box-sizing: border-box; }
+body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background: var(--gris); color: #1b2430; }
+header.top { background: var(--azul); color: #fff; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; }
+header.top a, header.top button { color: #fff; margin-left: 16px; }
+main { max-width: 560px; margin: 32px auto; background: #fff; padding: 28px; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,.12); }
+h1 { margin-top: 0; font-size: 1.5rem; }
+label { display: block; margin: 14px 0 4px; font-weight: 600; }
+input[type=text], input[type=password], input[type=email], input[type=number], select { width: 100%; padding: 9px 10px; border: 1px solid var(--borde); border-radius: 6px; font-size: 1rem; }
+button { cursor: pointer; padding: 9px 16px; border: 0; border-radius: 6px; background: var(--azul); color: #fff; font-size: 1rem; }
+header.top button { background: transparent; border: 1px solid #fff; }
+button.secundario { background: #fff; color: var(--azul); border: 1px solid var(--azul); }
+button.activo { background: var(--azul); color: #fff; }
+.field-error { display: block; color: var(--rojo); font-size: .875rem; min-height: 1.1em; }
+.alert-error { background: #fdecea; color: var(--rojo); border: 1px solid var(--rojo); padding: 10px; border-radius: 6px; margin-top: 14px; }
+.alert-ok { background: #e8f6ee; color: var(--verde); border: 1px solid var(--verde); padding: 10px; border-radius: 6px; margin-top: 14px; }
+[hidden] { display: none !important; }
+.fila { display: flex; gap: 8px; }
+.fila input { flex: 1; }
+ul#todo-list { list-style: none; padding: 0; margin: 16px 0; }
+ul#todo-list li { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--gris); }
+ul#todo-list li.completada label { text-decoration: line-through; color: #7b8794; }
+ul#todo-list li label { flex: 1; margin: 0; font-weight: 400; }
+ul#todo-list li button { padding: 4px 10px; background: var(--rojo); }
+.filtros { display: flex; gap: 8px; margin: 12px 0; }
+.hint { color: #6b7785; font-size: .85rem; }

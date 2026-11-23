@@ -1,0 +1,18 @@
+{
+  "name": "squash-playwright-demo",
+  "version": "1.0.0",
+  "description": "Proyecto de ejemplo para probar la integración Squash TM + Squash AUTOM (OpenTestFactory) + Playwright",
+  "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "test": "playwright test",
+    "test:estables": "playwright test --grep-invert @demo",
+    "test:smoke": "playwright test --grep @smoke",
+    "test:demo": "playwright test --grep @demo",
+    "simular": "node scripts/simular-squash.mjs"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.65.1"
+  }
+}
