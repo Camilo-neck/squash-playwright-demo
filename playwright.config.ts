@@ -1,4 +1,5 @@
 import { defineConfig } from '@playwright/test';
+import path from 'node:path';
 
 /**
  * URL de la app bajo prueba. Prioridad:
@@ -8,6 +9,14 @@ import { defineConfig } from '@playwright/test';
  */
 const externalUrl = process.env.TC_CUF_BASE_URL || process.env.BASE_URL;
 const baseURL = externalUrl || 'http://localhost:3000';
+
+// Cuando lo lanza Squash (el orquestador ejecuta desde la carpeta superior con --config), los
+// reportes deben quedar en ../playwright-report, que es donde el orquestador los espera.
+if (process.env.TC_REFERENCE) {
+  const out = path.resolve(__dirname, '..', 'playwright-report');
+  process.env.PLAYWRIGHT_HTML_REPORT = out;
+  process.env.PLAYWRIGHT_JUNIT_OUTPUT_NAME = path.join(out, 'pw_junit_report.xml');
+}
 
 export default defineConfig({
   // IMPORTANTE (doc. oficial de Squash): si `testDir` no coincide con la carpeta de la
